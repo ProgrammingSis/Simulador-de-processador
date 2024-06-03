@@ -24,6 +24,7 @@ typedef enum opArit{//poderia colocar como numeros em base decimal em vez dos bi
 	SUB = 0b0111
 } OperacaoArit;
 
+///@param REG_A é uma codificação para que você saiba qual registrador será usado, não é um endereço 
 typedef enum qRegistrador{//poderia colocar como numeros em base decimal em vez dos binarios
 	REG_A = 0,
 	REG_B = 1,
@@ -32,15 +33,10 @@ typedef enum qRegistrador{//poderia colocar como numeros em base decimal em vez 
 	REG_R = 6,
 	REG_PSW = 7
 } QualRegistrador;
-unsigned int* qualOperador(unsigned int operando);
 
+unsigned short int ri = 0; //conteudo de memoria na posicao pc
  
-
-int processa(short int* M, int memSize) {
-	unsigned short int* memory = (unsigned short int*)M;
-
-	// Definição dos registradores
-	unsigned short int ri = 0; //conteudo de memoria na posicao pc
+    //Registradores propriamente ditos, incializados com 0
 	unsigned short int pc = 0; 
 	unsigned short int a = 0;
 	unsigned short int b = 0;
@@ -49,16 +45,26 @@ int processa(short int* M, int memSize) {
 	unsigned short int r = 0;
 	unsigned short int psw = 0;
 
+ unsigned short int* qualOperador(unsigned short int operando);
+
+int processa(short int* M, int memSize) {
+	unsigned short int* memory = (unsigned short int*)M;
+
+	// Definição dos registradores
+	
+	
+
 	// Começa a executar a partir da instrução na posição 0 da memória
 	pc = 0;
 	while(1) {
 		ri = memory[pc];
 		
 		// Extrai o opcode da instrução (os 4 bits mais significantes)
-		unsigned int opcode = (ri & 0xF000) >> 12;
-		unsigned int argument = (ri & 0x0fff);
+		                                          
+		unsigned int opcode = (ri & 0xF000) >> 12; 
+		unsigned int argument = (ri & 0x0fff);    
 
-		printf ("Ensine-me a fazer algo com %hx\n", ri);
+		printf("Ensine-me a fazer algo com %hx\n", ri);
 		
 		/*NOP*/
 		if (opcode == NO_OP) {}
@@ -96,23 +102,26 @@ int processa(short int* M, int memSize) {
 		}
 
 		if(opcode == ARIT){
-			//o sinal >> move casas para a direita e ignora o que passar do espaco de memoria
-			//nesse caso, são 6 casas ignoradas para ter o numero certo nas comparacões
-			//esses numeros representam qual opcao de cada coisa sera selecionada
-			unsigned int tipoOperacao = (ri & 0xe00) >> 9;
-			unsigned int destinoOperacao = (ri & 0b0000000111000000) >> 6;
-			unsigned int operando1 = (ri & 0b0000000000111000) >> 3;
-			unsigned int operando2 = (ri & 0b0000000000000111);
+			/*O sinal >> move casas para a direita e ignora o que passar do espaço de memoria.
+			  Nesse caso, são 6 casas ignoradas para ter o numero certo nas comparações tipoOperação,
+			que contém apenas 3 bits. A máscara de bits seleciona esses 3 bits e "zera" o resto, que é retirado
+			da variável com o ">>" que move os bits não zerados para a direita. 
 
-			unsigned int* regDestino; // aqui temos um ponteiro para o destino
+			Esses numeros representam qual opção de cada coisa sera selecionada (exemplo: add, and, or, XOR, ETC.)*/
+			unsigned short int tipoOperacao = (ri & 0xe00) >> 9;
+			unsigned short int destinoOperacao = (ri & 0b0000000111000000) >> 6;
+			unsigned short int operando1 = (ri & 0b0000000000111000) >> 3;
+			unsigned short int operando2 = (ri & 0b0000000000000111);
+
+			unsigned short int* regDestino; // aqui temos um ponteiro para o destino
 
 			//sequencia de condicões para determinar o endereco destino correto
 
 			regDestino = qualOperador(destinoOperacao);
 
 			
-			unsigned int* regOperador1 =  qualOperador(operando1);
-			unsigned int* regOperador2 =  qualOperador(operando2);
+			unsigned short int* regOperador1 =  qualOperador(operando1);
+			unsigned short int* regOperador2 =  qualOperador(operando2);
 
 			//abaixo estão as condicoes que verifica qual eh a operacao pedida
 
@@ -138,7 +147,12 @@ int processa(short int* M, int memSize) {
 
 			}
 			if(tipoOperacao == NOT){
-				*regDestino = ~(*regOperador1); //para inverter bit a bit, pode-se usar ~
+				//para inverter com o NOT em nível de bit, foi usado "~"
+				*regDestino = ~(*regOperador1); 
+			}
+			 
+			if(tipoOperacao == ADD){
+				*regDestino = *regOperador1 + *regOperador2;
 			}
 			
 		}
@@ -152,8 +166,8 @@ int processa(short int* M, int memSize) {
 	return 0;
 }
 
-unsigned int* qualOperador(unsigned int operando){
-	unsigned int* regOperador = NULL;
+unsigned short int* qualOperador(unsigned short int operando){
+	unsigned short int* regOperador = NULL;
 
 	if(operando == REG_A){
 		regOperador = &a;
