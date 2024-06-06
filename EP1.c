@@ -24,8 +24,9 @@ typedef enum opArit{//poderia colocar como numeros em base decimal em vez dos bi
 	SUB = 0b0111
 } OperacaoArit;
 
-///@param REG_A é uma codificação para que você saiba qual registrador será usado, não é um endereço 
-typedef enum qRegistrador{//poderia colocar como numeros em base decimal em vez dos binarios
+//poderia colocar como numeros em base decimal em vez dos binarios
+typedef enum qRegistrador{
+///@param REG_A É uma codificação para que você saiba qual registrador será usado, não é um endereço 
 	REG_A = 0,
 	REG_B = 1,
 	REG_C = 2,
@@ -36,7 +37,7 @@ typedef enum qRegistrador{//poderia colocar como numeros em base decimal em vez 
 
 unsigned short int ri = 0; //conteudo de memoria na posicao pc
  
-    //Registradores propriamente ditos, incializados com 0
+    //Registradores propriamente ditos, incializados com 0, onde os conteúdos são guardados
 	unsigned short int pc = 0; 
 	unsigned short int a = 0;
 	unsigned short int b = 0;
@@ -108,15 +109,16 @@ int processa(short int* M, int memSize) {
 			da variável com o ">>" que move os bits não zerados para a direita. 
 
 			Esses numeros representam qual opção de cada coisa sera selecionada (exemplo: add, and, or, XOR, ETC.)*/
-			unsigned short int tipoOperacao = (ri & 0xe00) >> 9;
-			unsigned short int destinoOperacao = (ri & 0b0000000111000000) >> 6;
-			unsigned short int operando1 = (ri & 0b0000000000111000) >> 3;
-			unsigned short int operando2 = (ri & 0b0000000000000111);
 
-			unsigned short int* regDestino; // aqui temos um ponteiro para o destino
+			unsigned short int tipoOperacao = (ri & 0xe00) >> 9; //Um número que determina qual é o tipo de operação, não é ponteiro
+			unsigned short int destinoOperacao = (ri & 0b0000000111000000) >> 6;//Um número que determina qual é o reg destino, não é ponteiro
+			unsigned short int operando1 = (ri & 0b0000000000111000) >> 3;//Um número que determina qual é o registro 1, não é ponteiro
+			unsigned short int operando2 = (ri & 0b0000000000000111);//Um número que determina qual é o registro 2, não é ponteiro
 
-			//sequencia de condicões para determinar o endereco destino correto
+			unsigned short int* regDestino; // Um ponteiro para o registro destino da operação
 
+			/*função para determinar qual é o endereço correto 
+			para os operadores necessários na operação*/
 			regDestino = qualOperador(destinoOperacao);
 
 			
@@ -154,7 +156,9 @@ int processa(short int* M, int memSize) {
 			if(tipoOperacao == ADD){
 				*regDestino = *regOperador1 + *regOperador2;
 			}
-			
+			if(tipoOperacao == SUB){
+				*regDestino = *regOperador1 - *regOperador2;
+			}
 		}
 
 		pc++;
