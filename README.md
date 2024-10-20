@@ -17,4 +17,8 @@
   - AND
   - OR
   - XOR
-  - NOT   
+  - NOT
+    
+- Operações especiais:
+  - Deixar o registrador chamado de "acumulador" preenchido com 0s.
+  - Deixar o acumulador preenchido com "1111"
