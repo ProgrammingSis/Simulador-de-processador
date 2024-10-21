@@ -20,8 +20,8 @@
   - NOT
     
 - Operações especiais:
-  - Deixar o registrador chamado de "acumulador" preenchido com 0s.
-  - Deixar o acumulador preenchido com "1111"
+  - Deixar o registrador destino preenchido com 0s.
+  - Deixar o registrador destino preenchido com 1s.
   - JUMP
   - RETURN (faz com que ele retorne à próxima instrução que seria executada antes do salto)
   - HALT (faz o programa parar)
