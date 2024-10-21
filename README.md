@@ -22,3 +22,6 @@
 - Operações especiais:
   - Deixar o registrador chamado de "acumulador" preenchido com 0s.
   - Deixar o acumulador preenchido com "1111"
+  - JUMP
+  - RETURN (faz com que ele retorne à próxima instrução que seria executada antes do salto)
+  - HALT (faz o programa parar)
