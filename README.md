@@ -25,3 +25,5 @@
   - JUMP
   - RETURN (faz com que ele retorne à próxima instrução que seria executada antes do salto)
   - HALT (faz o programa parar)
+
+![foto do simulador de processador] (images/diagram.png)
